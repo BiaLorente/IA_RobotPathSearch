@@ -47,6 +47,13 @@ new_file.close()
 
 f = open("field.txt", "r")
 
+f = open('field.txt', 'r')
+a = []
+for line in f.readlines():
+    a.append([int(x) for x in line.split(',')])
+
+print(a)
+
 
 # start = list(map(int, f.))
 # entries = list(map(int, int.split(,)))
