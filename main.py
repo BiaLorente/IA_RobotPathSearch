@@ -1,77 +1,130 @@
-import pygame
-import tkinter as tk
+import arcade
+
+# Set how many rows and columns we will have
+ROW_COUNT = 42
+COLUMN_COUNT = 42
+
+# This sets the WIDTH and HEIGHT of each grid location
+WIDTH = 15
+HEIGHT = 15
+
+# This sets the margin between each cell
+# and on the edges of the screen.
+MARGIN = 1
+
+# Do the math to figure out our screen dimensions
+SCREEN_WIDTH = (WIDTH + MARGIN) * COLUMN_COUNT + MARGIN
+SCREEN_HEIGHT = (HEIGHT + MARGIN) * ROW_COUNT + MARGIN
+SCREEN_TITLE = "Robo Ambiente Busca Cega"
 
 
-class field(object):
-    rows = 0
-    w = 0
+class MyGame(arcade.Window):
+    """
+    Main application class.
+    """
 
-    def __init__(self, start, dirnx=1, dirny=0, color=(255, 0, 0)):
-        pass
+    def __init__(self, width, height, title):
+        """
+        Set up the application.
+        """
 
-    def move(self, dirnx, dirny):
-        pass
+        super().__init__(width, height, title)
 
-    def draw(self, surface, eyes=False):
-        pass
+        # Create a 2 dimensional array. A two dimensional
+        # array is simply a list of lists.
+        self.grid = []
 
+        f = open('ArvEstrada.txt', 'r')
 
-class robot(object):
-    def __init__(self, color, pos):
-        pass
+        start = f.readlines()[0]
 
-    def move(self):
-        pass
+        print(start)
 
-    def reset(self, pos):
-        pass
+        f.close()
 
-    def addCube(self):
-        pass
+        f = open('ArvEstrada.txt', 'r')
 
-    def draw(self, surface):
-        pass
+        goal = f.readlines()[1]
 
+        print(goal)
 
-def drawGrid(w, rows, surface):
-    sizeBtwn = w // rows
+        f.close()
 
-    x = 0
-    y = 0
-    for l in range(rows):
-        x = x + sizeBtwn
-        y = y + sizeBtwn
+        a_file = open("ArvEstrada.txt", "r")
 
-        # horizontal lines
-        pygame.draw.line(surface, (255, 255, 255), (x, 0), (x, w))
-        pygame.draw.line(surface, (255, 255, 255), (0, y), (w, y))
+        lines = a_file.readlines()
+        a_file.close()
 
+        del lines[1]
 
-def redrawWindow(surface):
-    global rows, width
-    surface.fill((0, 0, 0))
-    drawGrid(width, rows, surface)
-    pygame.display.update()
+        new_file = open("field.txt", "w+")
 
+        for line in lines:
+            new_file.write(line)
 
-def message_box(subject, content):
-    pass
+        new_file.close()
+
+        a_file = open("field.txt", "r")
+
+        lines = a_file.readlines()
+        a_file.close()
+
+        del lines[0]
+
+        new_file = open("field.txt", "w+")
+
+        for line in lines:
+            new_file.write(line)
+
+        new_file.close()
+
+        f = open("field.txt", "r")
+
+        f = open('field.txt', 'r')
+        a = []
+        for line in f.readlines():
+            a.append([int(x) for x in line.split(',')])
+
+        print(a)
+
+        self.grid = a
+
+        print(self.grid)
+
+        arcade.set_background_color(arcade.color.BLACK)
+
+    def on_draw(self):
+        """
+        Render the screen.
+        """
+        # This command has to happen before we start drawing
+        arcade.start_render()
+
+        # Draw the grid
+        for row in range(ROW_COUNT):
+            for column in range(COLUMN_COUNT):
+                # Figure out what color to draw the box
+                if self.grid[row][column] == 1:
+                    color = arcade.color.GREEN
+                elif self.grid[row][column] == 2:
+                    color = arcade.color.DARK_BROWN
+                elif self.grid[row][column] == 3:
+                    color = arcade.color.DARK_BLUE
+                else:
+                    color = arcade.color.ORANGE_RED
+
+                # Do the math to figure out where the box is
+                x = (MARGIN + WIDTH) * column + MARGIN + WIDTH // 2
+                y = (MARGIN + HEIGHT) * row + MARGIN + HEIGHT // 2
+
+                # Draw the box
+                arcade.draw_rectangle_filled(x, y, WIDTH, HEIGHT, color)
 
 
 def main():
-    global rows, width
-    width = 800
-    rows = 41
-    win = pygame.display.set_mode((width, width))
-    r = robot((255, 0, 0), (10, 10))
-    flag = True
+    MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    arcade.run()
 
-    clock = pygame.time.Clock()
 
-    while flag:
-        pygame.time.delay(50)
-        clock.tick(10)
-        redrawWindow(win)
-        pass
-
-main()
+if __name__ == "__main__":
+    main()

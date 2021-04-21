@@ -47,16 +47,3 @@ new_file.close()
 
 f = open("field.txt", "r")
 
-
-# start = list(map(int, f.))
-# entries = list(map(int, int.split(,)))
-
-#f = open('ArvEstrada.txt', 'r+')
-
-#d = f.readlines()
-
-#for i in d:
-#    if i != 0 or i != 1:
-#        f.write(i)
-#f.truncate()
-#f.close()
