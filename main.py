@@ -42,6 +42,7 @@ def drawGrid(w, rows, surface):
         x = x + sizeBtwn
         y = y + sizeBtwn
 
+
         # horizontal lines
         pygame.draw.line(surface, (255, 255, 255), (x, 0), (x, w))
         pygame.draw.line(surface, (255, 255, 255), (0, y), (w, y))
