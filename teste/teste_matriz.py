@@ -1,4 +1,6 @@
 import numpy as np
+import pygame
+import sns as sns
 
 f = open('ArvEstrada.txt', 'r')
 
@@ -55,8 +57,9 @@ for line in f.readlines():
 print(a)
 
 
-# start = list(map(int, f.))
-# entries = list(map(int, int.split(,)))
+
+# start = list(map.py(int, f.))
+# entries = list(map.py(int, int.split(,)))
 
 #f = open('ArvEstrada.txt', 'r+')
 
