@@ -43,12 +43,14 @@ class Node():
         return self.f
 
 
-
 def heuristic(a, b) -> float:
     (x1, y1) = a
     (x2, y2) = b
     return abs(x1 - x2) + abs(y1 - y2)
 
+
+def weight_key(Node):
+    return Node.f
 
 
 def astar(maze, start, goal):
@@ -65,25 +67,27 @@ def astar(maze, start, goal):
     closed_list = []
 
     # Add the start node
-    #heapq.heappush(open_list, start_node)
+    # heapq.heappush(open_list, start_node)
     open_list.append(start_node)
 
     # Loop until you find the goal
     while len(open_list) > 0:
 
         # Get the current node
+        open_list.sort(key=weight_key)
         current_node = open_list[0]
         current_index = 0
-        #open_list = sorted(open_list, key=Node.f_value())
-        for index, item in enumerate(open_list):
-            if item.f < current_node.f:
-                current_node = item
-                current_index = index
+        # open_list = sorted(open_list, key=Node.f_value())
+        # for index, item in enumerate(open_list):
+        # if item.f < current_node.f:
+        # print(f'no da open list{item.position}')
+        # current_node = item
+        # current_index = index
 
         # Pop current off open list, add to closed list
-        #heapq.heappop(open_list)
+        # heapq.heappop(open_list)
         open_list.pop(current_index)
-        #heapq.heappush(closed_list, current_node)
+        # heapq.heappush(closed_list, current_node)
         closed_list.append(current_node)
         # maze[current_node.position[0]][current_node.position[1]] = 1
 
@@ -93,15 +97,15 @@ def astar(maze, start, goal):
             custo = int
             current = current_node
             custo_total = current.f
-            print(f'custo do last = {custo_total}')
+            for i in range(len(open_list)):
+                print(f'open{open_list[i].position}')
+            for i in range(len(closed_list)):
+                print(f'close{closed_list[i].position}')
             while current is not None:
-                print(f'custo do {current_node.position}= {custo_total}')
-                custo_total += custo_total
                 path.append(current.position)
-                print(f'custo do no {current.position} = {current.f}')
                 current = current.parent
 
-            return path[::-1], custo_total # Return reversed path
+            return path[::-1], custo_total  # Return reversed path
 
         # Generate children
         children = []
@@ -122,27 +126,40 @@ def astar(maze, start, goal):
 
         # Loop through children
         for child in range(len(children)):
-
+            flag: int = 0
+            already_in_open: int = 0
             # Child is on the closed list
             for closed_child in range(len(closed_list)):
+                # print(f'no da closed list{closed_list[closed_child].position}')
                 if children[child].position == closed_list[closed_child].position:
+                    # children.pop(child)
+                    # print(f'localizei que o nó {children[child].position} esta closed_list')
+                    flag = 1
                     continue
+            if (flag != 1):
+                # Create the f, g, and h values
+                parent = children[child].parent
+                children[child].g = parent.g + maze[children[child].position[0]][children[child].position[1]]
+                children[child].h = heuristic(children[child].position, goal_node.position)
+                children[child].f = children[child].g + children[child].h
+                # print(f'child {children[child].position} parent.g= {parent.g} value= {maze[children[child].position[0]][children[child].position[1]]} g ={children[child].g} h= {children[child].h} f= {children[child].f} ')
 
-            # Create the f, g, and h values
-            parent = children[child].parent
-            children[child].g = parent.g + maze[children[child].position[0]][children[child].position[1]]
-            children[child].h = heuristic(children[child].position, goal_node.position)
-            children[child].f = children[child].g + children[child].h
-            print(f'child {children[child].position} parent.g= {parent.g} value= {maze[children[child].position[0]][children[child].position[1]]} g ={children[child].g} h= {children[child].h} f= {children[child].f} ')
+                # Child is already in the open list
+                for open_node in range(len(open_list)):
+                    if children[child].position == open_list[open_node].position:
+                        if children[child].g < open_list[open_node].g:
+                            open_list[open_node] = children[child]
+                            already_in_open = 1
+                            continue
+                        else:
+                            already_in_open = 1
+                            continue
+                # x = open_list[open_node]
+                # open_list.remove(x)
 
-
-            # Child is already in the open list
-            for open_node in range(len(open_list)):
-                if children[child].position == open_list[open_node].position and children[child].g > open_list[open_node].g:
-                    continue
-
-            # Add the child to the open list
-            open_list.append(children[child])
+                # Add the child to the open list and
+                if already_in_open != 1:
+                    open_list.append(children[child])
 
 
 class MyGame(arcade.Window):
@@ -261,9 +278,10 @@ def main():
 
     # MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, a)
     # arcade.run()
-    print(a)
+    # print(a)
     path = astar(a, start, goal)
     print(path)
+
 
 if __name__ == "__main__":
     main()
