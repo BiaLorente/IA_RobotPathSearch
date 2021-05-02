@@ -6,6 +6,7 @@ RED = (255, 122, 122)
 BLUE = (167, 210, 221)
 BROWN = (255, 194, 74)
 GREEN = (103, 150, 114)
+BLACK = (255, 255, 255)
 # Set how many rows and columns we will have
 ROW_COUNT = 42
 COLUMN_COUNT = 42
@@ -72,6 +73,10 @@ def ubs(maze, start, goal):
         # Pop current off open list, add to closed list
         open_list.pop(current_index)
         closed_list.append(current_node)
+        for i in range(len(open_list)):
+            print(f"Nodes em aberto na fronteira: {open_list[i].position}")
+        for i in range(len(closed_list)):
+            print(f"Nodes Fechados: {closed_list[i].position}")
 
         # Found the goal
         if current_node.position == goal_node.position:
@@ -79,12 +84,14 @@ def ubs(maze, start, goal):
             current = current_node
 
             for i in range(len(open_list)):
-                print(f"Node em aberto: {open_list[i].position}")
+                print(f"Nodes em aberto na fronteira: {open_list[i].position}")
+            print("----------------------------------------------------------------")
             for i in range(len(closed_list)):
-                print(f"Node em Fechado: {closed_list[i].position}")
+                print(f"Nodes Fechados: {closed_list[i].position}")
+            print("----------------------------------------------------------------")
 
             current_node.g = current_node.g + maze[start[0]][start[1]]
-            # print(cont)
+            print(f'Numero de nodes na closed_list: {len(closed_list)}')
             print(f'Custo total: {current_node.g}')
             while current is not None:
                 path.append(current.position)
@@ -166,12 +173,6 @@ def astar(maze, start, goal):
         open_list.sort(key=weight_key)
         current_node = open_list[0]
         current_index = 0
-        # open_list = sorted(open_list, key=Node.f_value())
-        # for index, item in enumerate(open_list):
-        # if item.f < current_node.f:
-        # print(f'no da open list{item.position}')
-        # current_node = item
-        # current_index = index
 
         # Pop current off open list, add to closed list
         # heapq.heappop(open_list)
@@ -179,22 +180,23 @@ def astar(maze, start, goal):
         # heapq.heappush(closed_list, current_node)
         closed_list.append(current_node)
         # maze[current_node.position[0]][current_node.position[1]] = 1
-
+        for i in range(len(open_list)):
+            print(f' Nos da open {open_list[i].position}')
+        for i in range(len(closed_list)):
+            print(f' Nos da close {closed_list[i].position}')
         # Found the goal
         if current_node.position == goal_node.position:
             path = []
-            custo = int
             current = current_node
             custo_total = current.f
-            for i in range(len(open_list)):
-                print(f'open{open_list[i].position}')
-            for i in range(len(closed_list)):
-                print(f'close{closed_list[i].position}')
+            tam = (len(closed_list))
             while current is not None:
                 path.append(current.position)
                 current = current.parent
+            print(f'Custo total: {custo_total}')
+            print(f'Total de nos visitados: {tam}')
 
-            return path[::-1], custo_total  # Return reversed path
+            return path[::-1]  # Return reversed path
 
         # Generate children
         children = []
@@ -231,7 +233,6 @@ def astar(maze, start, goal):
                 children[child].g = parent.g + maze[children[child].position[0]][children[child].position[1]]
                 children[child].h = heuristic(children[child].position, goal_node.position)
                 children[child].f = children[child].g + children[child].h
-                # print(f'child {children[child].position} parent.g= {parent.g} value= {maze[children[child].position[0]][children[child].position[1]]} g ={children[child].g} h= {children[child].h} f= {children[child].f} ')
 
                 # Child is already in the open list
                 for open_node in range(len(open_list)):
@@ -285,6 +286,8 @@ class MyGame(arcade.Window):
                     color = BROWN
                 elif self.grid[row][column] == 3:
                     color = BLUE
+                elif self.grid[row][column] == 0:
+                    color = BLACK
                 else:
                     color = RED
                 # Do the math to figure out where the box is
@@ -318,7 +321,8 @@ def call_map(a):
     MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, a)
     arcade.run()
 
-def call_ubs(m, start, goal):
+
+def call_ubs(m, start, goal, ubs_list):
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n")
     print("---------------------------")
     path = ubs(m, start, goal)
@@ -326,13 +330,31 @@ def call_ubs(m, start, goal):
     print("---------------------------")
 
 
-def call_astar(m, start, goal):
+    for j in range(42):
+        for i in range(42):
+            for k in range(len(path)):
+                if str(path[k]) == str((i, j)):
+                    ubs_list[i][j] = 0
+
+    MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, ubs_list)
+    arcade.run()
+
+
+def call_astar(m, start, goal, astar_list):
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n")
     print("---------------------------")
     path_astar = astar(m, start, goal)
     print(path_astar)
     print("---------------------------")
 
+    for j in range(42):
+        for i in range(42):
+            for k in range(len(path_astar)):
+                if str(path_astar[k]) == str((i, j)):
+                    astar_list[i][j] = 0
+
+    MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, astar_list)
+    arcade.run()
 
 def main():
     f = open('ArvEstrada.txt', 'r')
@@ -360,13 +382,20 @@ def main():
     f = open("field.txt", "r")
     f = open('field.txt', 'r')
     a = []
+    map_list = []
+    ubs_list = []
+    astar_list = []
     for line in f.readlines():
         a.append([int(x) for x in line.split(',')])
+        map_list.append([int(x) for x in line.split(',')])
+        ubs_list.append([int(x) for x in line.split(',')])
+        astar_list.append([int(x) for x in line.split(',')])
     start = (start.split(','))
     start = (int(start[0]), int(start[1]))
     goal = (goal.split(','))
     goal = (int(goal[0]), int(goal[1]))
 
+    print(map_list)
     print(goal)
 
     screen = Tk()
@@ -377,18 +406,16 @@ def main():
     welcome_text = Label(text="| Buscas |", fg="blue", bg="gray")
     welcome_text.pack()
 
-    click_me = Button(text="Busca A*", fg="blue", bg="gray", command=lambda: call_astar(a, start, goal), width=20)
+    click_me = Button(text="Busca A*", fg="blue", bg="gray", command=lambda: call_astar(a, start, goal, astar_list), width=20)
     click_me.place(x=75, y=50)
-    click_me = Button(text="Busca BCCU", fg="blue", bg="gray", command=lambda: call_ubs(a, start, goal), width=20)
+    click_me = Button(text="Busca BCCU", fg="blue", bg="gray", command=lambda: call_ubs(a, start, goal, ubs_list), width=20)
     click_me.place(x=75, y=75)
-    click_me = Button(text="Mapa", fg="blue", bg="gray", command=lambda: call_map(a), width=20)
+    click_me = Button(text="Mapa", fg="blue", bg="gray", command=lambda: call_map(map_list), width=20)
     click_me.place(x=75, y=100)
     click_me = Button(text="Fechar", fg="red", bg="gray", command=lambda: screen.destroy(), width=20)
     click_me.place(x=75, y=150)
     screen.mainloop()
 
-    # path = ubs(b, start, goal)
-    # print(path)
 
 
 if __name__ == "__main__":
