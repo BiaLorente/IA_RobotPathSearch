@@ -267,7 +267,7 @@ class MyGame(arcade.Window):
         # array is simply a list of lists.
         self.grid = []
         self.grid = matrix
-        print(self.grid)
+        # print(self.grid)
         arcade.set_background_color(arcade.color.BLACK)
 
     def on_draw(self):
@@ -326,7 +326,7 @@ def call_ubs(m, start, goal, ubs_list):
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n")
     print("---------------------------")
     path = ubs(m, start, goal)
-    print(path)
+    print(f'Caminho Busca Cega: {path}')
     print("---------------------------")
 
 
@@ -344,7 +344,7 @@ def call_astar(m, start, goal, astar_list):
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n")
     print("---------------------------")
     path_astar = astar(m, start, goal)
-    print(path_astar)
+    print(f'Caminho Astar: {path_astar}')
     print("---------------------------")
 
     for j in range(42):
@@ -395,8 +395,9 @@ def main():
     goal = (goal.split(','))
     goal = (int(goal[0]), int(goal[1]))
 
-    print(map_list)
-    print(goal)
+    print(f'Matriz Original: {map_list}')
+    print(f'Destino: {goal}')
+    print(f'Origem: {start}')
 
     screen = Tk()
     screen.title("Buscas - IA")
